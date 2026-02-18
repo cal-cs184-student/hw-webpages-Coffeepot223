@@ -60,7 +60,7 @@
             <img src="hw1/images/screenshot_2-16_17-10-22.png" alt="Smooth Color Wheel"/>
         </figure>
 
-        <h2>Task 5: "Pixel sampling" for texture mapping</h2>
+        <h2>Task 5: Pixel sampling</h2>
         <p>Pixel sampling is when we take the UV coordinates of a pixel and use them to find the right color from a texture map. In my implementation, I updated the rasterize_textured_triangle function to calculate these UV coordinates at every sample point by interpolating the vertex using the barycentric math from Task 4. These coordinates are then used to look up the color in the texture through two different methods. Nearest neighbor sampling, where we simply round the UV coordinates to the closest integer texel, which is very fast but can look blocky when you zoom in. Bilinear sampling finds the four closest texels to the sample point and then performs a weighted average based on their distance, which creates a much smoother transition between colors at the cost of computational power.</p>
         <p>Bilinear sampling looks better than nearest sampling in this example. Nearest sampling causes a "stair-step" look because it forcefully picks one color for the entire region, whereas bilinear sampling creates a smooth gradient between the four nearest colors. The difference is also most dramatic at 1 sample per pixel because as we increase the sample rate to 16, supersampling helps hide some of the blockiness in Nearest, but Bilinear still provides a more natural and smooth look.</p>
 
