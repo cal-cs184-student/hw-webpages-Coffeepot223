@@ -31,7 +31,7 @@
         <p>For the rasterizations, I implemented the standard point-in-triangle test. I first calculate the bounding box of the triangle by finding the minimum and maximum X and Y coordinates of the three vertices. This allows me to restrict the search area significantly compared to checking every single pixel in the framebuffer. I also ensured that these coordinates were clamped to the screen width and height, so the program doesn't crash if a triangle exceeds the bounds. Once I have the loop set up, I iterate through every single pixel inside the box. For each pixel, I sampled at the center $(x+0.5, y+0.5)$ and ran the edge function on all three edges of the triangle. Additionally, to handle both clockwise and counterclockwise winding orders, I just check if the results of the edge tests are either all positive or all negative. If they match, then the pixel is inside, and I can call fill_pixel. My algorithm is no worse than checking each sample within the bounding box because it never checks a pixel outside the rectangular bounds defined by the vertices. This gives me a runtime of O(W X H) instead of O(Screen W X Screen H).</p>
         
         <figure>
-            <img src="images/screenshot_2-5_17-34-46.png" alt="Task 1 Basic Test 4"/>
+            <img src="hw1/images/screenshot_2-5_17-34-46.png" alt="Task 1 Basic Test 4"/>
         </figure>
 
         <h2>Task 2: Antialiasing by Supersampling</h2>
@@ -40,9 +40,9 @@
 
         <table>
             <tr>
-                <td><img src="images/screenshot_2-16_15-57-33.png"/><figcaption>Sample Rate 1</figcaption></td>
-                <td><img src="images/screenshot_2-16_15-57-34.png"/><figcaption>Sample Rate 4</figcaption></td>
-                <td><img src="images/screenshot_2-16_15-57-35.png"/><figcaption>Sample Rate 16</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_15-57-33.png"/><figcaption>Sample Rate 1</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_15-57-34.png"/><figcaption>Sample Rate 4</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_15-57-35.png"/><figcaption>Sample Rate 16</figcaption></td>
             </tr>
         </table>
 
@@ -50,14 +50,14 @@
         <p>For translation, I created a matrix that shifts coordinates by dx and dy. Then, for scaling, I adjusted the diagonal elements of the matrix to grow or shrink shapes along the X and Y axes. And for rotation, I converted the input degrees into radians and then used the standard sine and cosine formulas to rotate the coordinates counterclockwise. I modified Cubeman to be completely blue and changed its pose so it looks like it is waving with its left arm while its right arm hangs naturally at its side. To do this, I simply modified the transforms by adding rotation values to the specific arm segments and updating the fill color for all polygons to blue. </p>
         
         <figure>
-            <img src="images/screenshot_2-16_16-48-59.png" alt="Waving Blue Cubeman"/>
+            <img src="hw1/images/screenshot_2-16_16-48-59.png" alt="Waving Blue Cubeman"/>
         </figure>
 
         <h2>Task 4: Barycentric Coordinates</h2>
         <p>Barycentric coordinates are a coordinate system that can describe a point's position within a triangle based on its distance from the three vertices. Essentially, every point inside the triangle can be expressed as a weighted average of the three corners, where the weights always add up to 1. What I did in the implementation was to rasterize these weights for each sample point during rasterization, by calculating how much influence do the corners have over a specific pixel's coordinates. By mixing the colors of 3 vertices with these weights, I created smooth color gradients over my entire triangle.</p>
         
         <figure>
-            <img src="images/screenshot_2-16_17-10-22.png" alt="Smooth Color Wheel"/>
+            <img src="hw1/images/screenshot_2-16_17-10-22.png" alt="Smooth Color Wheel"/>
         </figure>
 
         <h2>Task 5: "Pixel sampling" for texture mapping</h2>
@@ -66,12 +66,12 @@
 
         <table>
             <tr>
-                <td><img src="images/screenshot_2-16_18-2-36.png"/><figcaption>Nearest Sampling (1)</figcaption></td>
-                <td><img src="images/screenshot_2-16_18-2-41.png"/><figcaption>Nearest Sampling (16)</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_18-2-36.png"/><figcaption>Nearest Sampling (1)</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_18-2-41.png"/><figcaption>Nearest Sampling (16)</figcaption></td>
             </tr>
             <tr>
-                <td><img src="images/screenshot_2-16_18-2-47.png"/><figcaption>Bilinear Sampling (1)</figcaption></td>
-                <td><img src="images/screenshot_2-16_18-2-50.png"/><figcaption>Bilinear Sampling (16)</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_18-2-47.png"/><figcaption>Bilinear Sampling (1)</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_18-2-50.png"/><figcaption>Bilinear Sampling (16)</figcaption></td>
             </tr>
         </table>
 
@@ -82,12 +82,12 @@
 
         <table>
             <tr>
-                <td><img src="images/screenshot_2-17_16-18-36.png"/><figcaption>L_ZERO, P_NEAREST</figcaption></td>
-                <td><img src="images/screenshot_2-17_16-18-48.png"/><figcaption>L_ZERO, P_LINEAR</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-17_16-18-36.png"/><figcaption>L_ZERO, P_NEAREST</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-17_16-18-48.png"/><figcaption>L_ZERO, P_LINEAR</figcaption></td>
             </tr>
             <tr>
-                <td><img src="images/screenshot_2-17_16-18-56.png"/><figcaption>L_NEAREST, P_NEAREST</figcaption></td>
-                <td><img src="images/screenshot_2-17_16-18-58.png"/><figcaption>L_NEAREST, P_LINEAR</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-17_16-18-56.png"/><figcaption>L_NEAREST, P_NEAREST</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-17_16-18-58.png"/><figcaption>L_NEAREST, P_LINEAR</figcaption></td>
             </tr>
         </table>
 
