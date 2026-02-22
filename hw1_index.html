@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+        <style>
+            h1 { text-align: center; }
+            .container { margin: 0 auto; padding: 60px 20%; }
+            figure { text-align: center; margin: 20px 0; }
+            img { display: inline-block; max-width: 100%; height: auto; border: 1px solid #ddd; }
+            body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #333; }
+            table { width: 100%; text-align: center; border-collapse: collapse; margin-top: 20px; }
+            td { padding: 10px; vertical-align: top; }
+            figcaption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+            h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 40px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+        <h1>CS184/284A Spring 2026 Homework 1 Write-Up</h1>
+        <div style="text-align: center; font-weight: 600;">Johnson Huang</div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <b>Link to webpage:</b> <a href="https://cal-cs184-student.github.io/hw-webpages-Coffeepot223/">https://cal-cs184-student.github.io/hw-webpages-Coffeepot223/</a><br>
+            <b>Link to GitHub repository:</b> <a href="https://github.com/cal-cs184-student/hw1-rasterizer-jonjon">https://github.com/cal-cs184-student/hw1-rasterizer-jonjon</a>
+        </div>
+
+        <h2>Overview</h2>
+        <p>In this homework, I implemented an rasterizer capable of drawing triangles with single colors, interpolated colors, and textures using various different sampling techniques. This project taught me the fundamental trade-offs between computational speed, memory usage, and visual quality in computer graphics.</p>
+
+        <h2>Task 1: Drawing Single-Color Triangles</h2>
+        <p>For the rasterizations, I implemented the standard point-in-triangle test. I first calculate the bounding box of the triangle by finding the minimum and maximum X and Y coordinates of the three vertices. This allows me to restrict the search area significantly compared to checking every single pixel in the framebuffer. I also ensured that these coordinates were clamped to the screen width and height, so the program doesn't crash if a triangle exceeds the bounds. Once I have the loop set up, I iterate through every single pixel inside the box. For each pixel, I sampled at the center $(x+0.5, y+0.5)$ and ran the edge function on all three edges of the triangle. Additionally, to handle both clockwise and counterclockwise winding orders, I just check if the results of the edge tests are either all positive or all negative. If they match, then the pixel is inside, and I can call fill_pixel. My algorithm is no worse than checking each sample within the bounding box because it never checks a pixel outside the rectangular bounds defined by the vertices. This gives me a runtime of O(W X H) instead of O(Screen W X Screen H).</p>
+        
+        <figure>
+            <img src="hw1/images/screenshot_2-5_17-34-46.png" alt="Task 1 Basic Test 4"/>
+        </figure>
+
+        <h2>Task 2: Antialiasing by Supersampling</h2>
+        <p>To implement the supersampling feature, I modified my rasterization to use a larger intermediate buffer, called the sample_buffer. Instead of storing one color per pixel, this new buffer now stores sample_rate number of colors for each pixel. I then updated set_sample_rate and set_framebuffer_target to resize this buffer whenever the settings change. In the triangle rasterization function, I added two nested loops to iterate through a sub-pixel grid for each pixel. For each sub-pixel, I performed the point-in-triangle test at the sub-pixel's center and stored the result in the sample_buffer. Finally, in resolve_to_framebuffer, I averaged the colors of all sub-pixels within a single pixel to produce the final antialiased color.</p>
+        <p>Supersampling is useful because it softens "stair-step" edges or aliasing by representing partial pixel coverage. By sampling at a higher frequency and averaging, we create smoother transitions. At a sample rate of 1, the skinny triangle corners appear disconnected because the single sample point misses the thin geometry. As the sample rate increases to 4 and 16, these edges become smoother, and the thin tips become more visible. This happens because the sub-pixels capture partial hits on the triangle, which are then averaged into various shades of the triangle's color.</p>
+
+        <table>
+            <tr>
+                <td><img src="hw1/images/screenshot_2-16_15-57-33.png"/><figcaption>Sample Rate 1</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_15-57-34.png"/><figcaption>Sample Rate 4</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_15-57-35.png"/><figcaption>Sample Rate 16</figcaption></td>
+            </tr>
+        </table>
+
+        <h2>Task 3: Transforms</h2>
+        <p>For translation, I created a matrix that shifts coordinates by dx and dy. Then, for scaling, I adjusted the diagonal elements of the matrix to grow or shrink shapes along the X and Y axes. And for rotation, I converted the input degrees into radians and then used the standard sine and cosine formulas to rotate the coordinates counterclockwise. I modified Cubeman to be completely blue and changed its pose so it looks like it is waving with its left arm while its right arm hangs naturally at its side. To do this, I simply modified the transforms by adding rotation values to the specific arm segments and updating the fill color for all polygons to blue. </p>
+        
+        <figure>
+            <img src="hw1/images/screenshot_2-16_16-48-59.png" alt="Waving Blue Cubeman"/>
+        </figure>
+
+        <h2>Task 4: Barycentric Coordinates</h2>
+        <p>Barycentric coordinates are a coordinate system that can describe a point's position within a triangle based on its distance from the three vertices. Essentially, every point inside the triangle can be expressed as a weighted average of the three corners, where the weights always add up to 1. What I did in the implementation was to rasterize these weights for each sample point during rasterization, by calculating how much influence do the corners have over a specific pixel's coordinates. By mixing the colors of 3 vertices with these weights, I created smooth color gradients over my entire triangle.</p>
+        
+        <figure>
+            <img src="hw1/images/screenshot_2-16_17-10-22.png" alt="Smooth Color Wheel"/>
+        </figure>
+
+        <h2>Task 5: Pixel sampling</h2>
+        <p>Pixel sampling is when we take the UV coordinates of a pixel and use them to find the right color from a texture map. In my implementation, I updated the rasterize_textured_triangle function to calculate these UV coordinates at every sample point by interpolating the vertex using the barycentric math from Task 4. These coordinates are then used to look up the color in the texture through two different methods. Nearest neighbor sampling, where we simply round the UV coordinates to the closest integer texel, which is very fast but can look blocky when you zoom in. Bilinear sampling finds the four closest texels to the sample point and then performs a weighted average based on their distance, which creates a much smoother transition between colors at the cost of computational power.</p>
+        <p>Bilinear sampling looks better than nearest sampling in this example. Nearest sampling causes a "stair-step" look because it forcefully picks one color for the entire region, whereas bilinear sampling creates a smooth gradient between the four nearest colors. The difference is also most dramatic at 1 sample per pixel because as we increase the sample rate to 16, supersampling helps hide some of the blockiness in Nearest, but Bilinear still provides a more natural and smooth look.</p>
+
+        <table>
+            <tr>
+                <td><img src="hw1/images/screenshot_2-16_18-2-36.png"/><figcaption>Nearest Sampling (1)</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_18-2-41.png"/><figcaption>Nearest Sampling (16)</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw1/images/screenshot_2-16_18-2-47.png"/><figcaption>Bilinear Sampling (1)</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-16_18-2-50.png"/><figcaption>Bilinear Sampling (16)</figcaption></td>
+            </tr>
+        </table>
+
+        <h2>Task 6:  Level Sampling with Mipmaps</h2>
+        <p>Level sampling is the process of taking the UV coordinates of a pixel and determining which version of a texture from it is the most appropriate based on the pixel's footprint on the screen. To implement this, I updated rasterize_textured_triangle to calculate the UV coordinates for two adjacent points, $(x+1,y)$ and $(x,y+1)$, using barycentric differentials. By measuring how much these UVs change across a single pixel, I was then able to calculate the correct mipmap level. After that, I implemented three sampling methods: L_ZERO for the base texture, L_NEAREST to pick the closest, and L_LINEAR, which linearly interpolates between the two closest mipmap levels.</p>
+        <p>There are also significant tradeoffs between speed, memory, and antialiasing power across these techniques. Pixel sampling prioritizes either speed or smoothness. Nearest neighbor is fast but creates blocky magnification artifacts, while Bilinear sampling is slightly slower but provides smoother transitions. Level sampling using mipmaps effectively eliminates "shimmering" in the distance but requires more memory to store pre-filtered levels. Finally, increasing the sample rate through supersampling offers the highest quality for both edges and textures, but it is the most computationally expensive.</p>
+        <p>Level sampling is the most effective at preventing aliasing. Using L_NEAREST or L_LINEAR significantly reduces the noisy artifacts seen in the far distance compared to L_ZERO. Furthermore, when combined with Bilinear pixel sampling, the result is a cleaner image that avoids both blockiness and high-frequency noise. </p>
+
+        <table>
+            <tr>
+                <td><img src="hw1/images/screenshot_2-17_16-18-36.png"/><figcaption>L_ZERO, P_NEAREST</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-17_16-18-48.png"/><figcaption>L_ZERO, P_LINEAR</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw1/images/screenshot_2-17_16-18-56.png"/><figcaption>L_NEAREST, P_NEAREST</figcaption></td>
+                <td><img src="hw1/images/screenshot_2-17_16-18-58.png"/><figcaption>L_NEAREST, P_LINEAR</figcaption></td>
+            </tr>
+        </table>
+
+        </div>
+    </body>
+</html>
