@@ -21,16 +21,16 @@
 
         <div style="text-align: center; margin: 20px 0;">
             <b>Link to webpage:</b> <a href="https://cal-cs184-student.github.io/hw-webpages-Coffeepot223/">https://cal-cs184-student.github.io/hw-webpages-Coffeepot223/</a><br>
-            <b>Link to GitHub repository:</b> <a href="https://github.com/cal-cs184-student/hw2-meshedit-jonjon">https://github.com/cal-cs184-student/hw2-meshedit-jonjon</a>
+            <b>Link to GitHub repository:</b> <a href="https://github.com/cal-cs184-student/hw2-meshedit-jonjon2">https://github.com/cal-cs184-student/hw2-meshedit-jonjon2</a>
         </div>
 
         <h2>Overview</h2>
-        <p>In this homework, I explored geometric modeling by building Bezier curves and surfaces using de Casteljau's algorithm, manipulating triangle meshes via the half-edge data structure, and implementing Loop subdivision for mesh upsampling. This project gave me hands-on experience with the pointer operations required to safely modify mesh topology without breaking manifold properties.</p>
+        <p>In this homework, I implemented geometric modeling by building Bezier curves and surfaces using de Casteljau's algorithm, adjusting triangle meshes using the half-edge data structure, as well as implementing Loop subdivision for mesh upsampling. This project gave me hands-on experience with adjusting pointer operations in order to safely modify mesh topology.</p>
 
         <h2>Section 1: Bezier Curves and Surfaces</h2>
 
         <h2>Part 1: Bezier Curves with 1D de Casteljau Subdivision</h2>
-        <p>De Casteljau's algorithm is a recursive method used to evaluate Bezier curves by performing several consecutive linear interpolations between adjacent control points at a specific parameter. In my implementation, I ran a loop through the provided points array and computed the next level of intermediate points using the formula $p' = (1 - t)p_i + t p_{i + 1}$. Then, by storing these newly calculated points in a vector and returning it, the algorithm reduces the number of control points by one with each step until a single point lying directly on the curve is found.</p>
+        <p>De Casteljau's algorithm is a recursive method used to evaluate Bezier curves by performing several consecutive linear interpolations between adjacent control points at a specific parameter. In my implementation, I ran a loop through the provided points array and computed the next level of intermediate points using the formula p’ = (1 - t)pi + (tpi + 1). Then, by storing these newly calculated points in a vector and returning it, the algorithm reduces the number of control points by one with each step until a single point lying directly on the curve is found.</p>
         
         <table>
             <tr>
