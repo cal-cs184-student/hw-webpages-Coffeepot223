@@ -12,6 +12,7 @@
             td { padding: 10px; vertical-align: top; }
             figcaption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
             h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 40px; }
+            h3 { margin-top: 30px; }
         </style>
     </head>
     <body>
@@ -34,13 +35,19 @@
         
         <table>
             <tr>
-                <td><img src="images/part1_step1.png" alt="Step 1"/><figcaption>Evaluation Step 1</figcaption></td>
-                <td><img src="images/part1_step2.png" alt="Step 2"/><figcaption>Evaluation Step 2</figcaption></td>
-                <td><img src="images/part1_step3.png" alt="Step 3"/><figcaption>Evaluation Step 3</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 6.48.02 PM.png" alt="Base Curve"/><figcaption>Base Curve</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at [INSERT_HIDDEN_TIMESTAMP_1] PM.png" alt="Step 1"/><figcaption>Evaluation Step 1</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at [INSERT_HIDDEN_TIMESTAMP_2] PM.png" alt="Step 2"/><figcaption>Evaluation Step 2</figcaption></td>
             </tr>
             <tr>
-                <td><img src="images/part1_completed.png" alt="Completed Curve"/><figcaption>Completed Curve</figcaption></td>
-                <td><img src="images/part1_modified.png" alt="Modified Curve"/><figcaption>Modified Control Points</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 6.48.26 PM.png" alt="Step 3"/><figcaption>Evaluation Step 3</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 6.48.35 PM.png" alt="Step 4"/><figcaption>Evaluation Step 4</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 6.48.40 PM.png" alt="Step 5"/><figcaption>Evaluation Step 5 (Red Dot)</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 6.49.01 PM.png" alt="Completed Curve"/><figcaption>Completed Curve</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 6.50.03 PM.png" alt="Modified Curve"/><figcaption>Modified Control Points</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 6.50.11 PM.png" alt="Modified Curve Adjusted"/><figcaption>Modified Control Points (Adjusted Parameter)</figcaption></td>
             </tr>
         </table>
 
@@ -48,7 +55,7 @@
         <p>De Casteljau's algorithm extends to Bezier surfaces through a separable 1D method, where we first evaluate a series of 1D Bezier curves along one single axis to generate a new set of intermediate control points. In my implementation, I evaluated each row of the given control point grid at parameter u to find these intermediate points. After that, I used that new array of points to evaluate a final 1D curve at the parameter v.</p>
         
         <figure>
-            <img src="images/part2_teapot.png" alt="Bezier Surface Teapot"/>
+            <img src="hw2/images/Screenshot 2026-02-21 at 9.33.16 PM.png" alt="Bezier Surface Teapot"/>
             <figcaption>Evaluated Bezier Surface Teapot</figcaption>
         </figure>
 
@@ -59,8 +66,8 @@
         
         <table>
             <tr>
-                <td><img src="images/part3_flat.png" alt="Flat Shading"/><figcaption>Default Flat Shading</figcaption></td>
-                <td><img src="images/part3_phong.png" alt="Phong Shading"/><figcaption>Smooth Phong Shading</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 9.33.46 PM.png" alt="Flat Shading"/><figcaption>Default Flat Shading</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 9.33.55 PM.png" alt="Phong Shading"/><figcaption>Smooth Phong Shading</figcaption></td>
             </tr>
         </table>
 
@@ -69,8 +76,8 @@
         
         <table>
             <tr>
-                <td><img src="images/part4_before.png" alt="Before Flip"/><figcaption>Before Edge Flips</figcaption></td>
-                <td><img src="images/part4_after.png" alt="After Flip"/><figcaption>After Edge Flips</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 7.32.10 PM.png" alt="Before Flip"/><figcaption>Before Edge Flips</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 7.33.12 PM.png" alt="After Flip"/><figcaption>After Edge Flips</figcaption></td>
             </tr>
         </table>
 
@@ -79,12 +86,9 @@
         
         <table>
             <tr>
-                <td><img src="images/part5_before_split.png" alt="Before Split"/><figcaption>Before Edge Splits</figcaption></td>
-                <td><img src="images/part5_after_split.png" alt="After Split"/><figcaption>After Edge Splits</figcaption></td>
-            </tr>
-            <tr>
-                <td><img src="images/part5_before_both.png" alt="Before Flips and Splits"/><figcaption>Before Flips and Splits</figcaption></td>
-                <td><img src="images/part5_after_both.png" alt="After Flips and Splits"/><figcaption>After Flips and Splits</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 9.29.12 PM.png" alt="Original Mesh"/><figcaption>Original Mesh</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 9.29.28 PM.png" alt="After Splits"/><figcaption>After Edge Splits</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 9.29.57 PM.png" alt="After Flips and Splits"/><figcaption>After Flips and Splits</figcaption></td>
             </tr>
         </table>
 
@@ -93,14 +97,38 @@
         <p>After applying Loop subdivision, the meshes become much smoother, causing the mesh to become visibly more rounded. Additionally, we can reduce this smoothing effect on specific features by pre-splitting the edges near the sharp corners before subdividing the mesh. This caused higher vertex density, which in turn keeps the algorithm’s weighted averaging to keep the new positions much closer to the original, sharper geometry.</p>
         <p>When repeatedly subdividing the cube, it becomes asymmetric because its faces are initially divided by single diagonals in alternating directions, which causes the looped subdivision weights to pull the vertices unevenly because of the biased topology. To fix this issue and ensure symmetric subdivision, I pre-processed the cube by splitting the diagonal edge across every face to create a symmetric X pattern on all six sides. This balances the vertex degrees and edge connections, allowing the weighted averaging to distribute evenly and maintain a more rounded shape as it upsamples.</p>
 
+        <h3>Basic Subdivision Progression</h3>
         <table>
             <tr>
-                <td><img src="images/part6_basic.png" alt="Basic Subdivision"/><figcaption>Basic Loop Subdivision</figcaption></td>
-                <td><img src="images/part6_sharp.png" alt="Sharp Edge Protection"/><figcaption>Edge Sharpness via Pre-Splitting</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.01.55 PM.png" alt="Subdivision 1"/><figcaption>Base Mesh</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.02.16 PM.png" alt="Subdivision 2"/><figcaption>Iteration 1</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.02.25 PM.png" alt="Subdivision 3"/><figcaption>Iteration 2</figcaption></td>
             </tr>
             <tr>
-                <td><img src="images/part6_asymmetric.png" alt="Asymmetric Cube"/><figcaption>Asymmetric Cube Subdivision</figcaption></td>
-                <td><img src="images/part6_symmetric.png" alt="Symmetric Cube"/><figcaption>Symmetric Cube after Pre-Processing</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.02.34 PM.png" alt="Subdivision 4"/><figcaption>Iteration 3</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.02.44 PM.png" alt="Subdivision 5"/><figcaption>Iteration 4</figcaption></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <h3>Asymmetric vs Symmetric Cube Subdivision</h3>
+        <table>
+            <tr>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.03.15 PM.png" alt="Base Cube"/><figcaption>Default Cube</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.03.25 PM.png" alt="Asymmetric Cube"/><figcaption>Asymmetric Subdivision</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.04.34 PM.png" alt="Pre-processed Cube"/><figcaption>Pre-processed Symmetric Cube</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.04.47 PM.png" alt="Symmetric Cube Subdivision"/><figcaption>Symmetric Subdivision</figcaption></td>
+            </tr>
+        </table>
+
+        <h3>Edge Sharpness Preservation</h3>
+        <table>
+            <tr>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.07.55 PM.png" alt="Pre-split Edge"/><figcaption>Pre-splitting Specific Face</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.08.25 PM.png" alt="Sharp Edge 1"/><figcaption>Subdivision Iteration 1</figcaption></td>
+                <td><img src="hw2/images/Screenshot 2026-02-21 at 10.08.35 PM.png" alt="Sharp Edge 2"/><figcaption>Subdivision Iteration 2 (Face Remains Flat)</figcaption></td>
             </tr>
         </table>
 
