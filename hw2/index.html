@@ -33,31 +33,29 @@
         <h2>Part 1: Bezier Curves with 1D de Casteljau Subdivision</h2>
         <p>De Casteljau's algorithm is a recursive method used to evaluate Bezier curves by performing several consecutive linear interpolations between adjacent control points at a specific parameter. In my implementation, I ran a loop through the provided points array and computed the next level of intermediate points using the formula p’ = (1 - t)pi + (tpi + 1). Then, by storing these newly calculated points in a vector and returning it, the algorithm reduces the number of control points by one with each step until a single point lying directly on the curve is found.</p>
         
-        
         <table>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%206.48.02%20PM.png" alt="Base Curve"/><figcaption>Base Curve</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%20[INSERT_HIDDEN_TIMESTAMP_1]%20PM.png" alt="Step 1"/><figcaption>Evaluation Step 1</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%20[INSERT_HIDDEN_TIMESTAMP_2]%20PM.png" alt="Step 2"/><figcaption>Evaluation Step 2</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_6.48.02.png" alt="Base Curve"/><figcaption>Base Curve</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_6.48.10.png" alt="Step 1"/><figcaption>Evaluation Step 1</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_6.48.17.png" alt="Step 2"/><figcaption>Evaluation Step 2</figcaption></td>
             </tr>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%206.48.26%20PM.png" alt="Step 3"/><figcaption>Evaluation Step 3</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%206.48.35%20PM.png" alt="Step 4"/><figcaption>Evaluation Step 4</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%206.48.40%20PM.png" alt="Step 5"/><figcaption>Evaluation Step 5 (Red Dot)</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_6.48.26.png" alt="Step 3"/><figcaption>Evaluation Step 3</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_6.48.35.png" alt="Step 4"/><figcaption>Evaluation Step 4</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_6.48.40.png" alt="Step 5"/><figcaption>Evaluation Step 5 (Red Dot)</figcaption></td>
             </tr>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%206.49.01%20PM.png" alt="Completed Curve"/><figcaption>Completed Curve</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%206.50.03%20PM.png" alt="Modified Curve"/><figcaption>Modified Control Points</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%206.50.11%20PM.png" alt="Modified Curve Adjusted"/><figcaption>Modified Control Points (Adjusted Parameter)</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_6.49.01.png" alt="Completed Curve"/><figcaption>Completed Curve</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_6.50.03.png" alt="Modified Curve"/><figcaption>Modified Control Points</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_6.50.11.png" alt="Modified Curve Adjusted"/><figcaption>Modified Control Points (Adjusted Parameter)</figcaption></td>
             </tr>
         </table>
 
         <h2>Part 2: Bezier Surfaces with Separable 1D de Casteljau</h2>
         <p>De Casteljau's algorithm extends to Bezier surfaces through a separable 1D method, where we first evaluate a series of 1D Bezier curves along one single axis to generate a new set of intermediate control points. In my implementation, I evaluated each row of the given control point grid at parameter u to find these intermediate points. After that, I used that new array of points to evaluate a final 1D curve at the parameter v.</p>
         
-        
         <figure>
-            <img src="hw2/images/Screenshot%202026-02-21%20at%209.33.16%20PM.png" alt="Bezier Surface Teapot"/>
+            <img src="hw2/images/Screenshot_2026-02-21_at_9.33.16.png" alt="Bezier Surface Teapot"/>
             <figcaption>Evaluated Bezier Surface Teapot</figcaption>
         </figure>
 
@@ -66,35 +64,31 @@
         <h2>Part 3: Area-Weighted Vertex Normals</h2>
         <p>To implement my solution, I looped through the half-edge data structure to iterate through all the non-boundary faces that are incident to a given vertex. For each face, I calculated the cross product of two of its edge vectors, which gives me a normal vector whose magnitude is twice the face's area, then I added this to an accumulated sum. Finally, I normalized the resulting sum vector to produce the smoothed Phong shading result.</p>
         
-        
         <table>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%209.33.46%20PM.png" alt="Flat Shading"/><figcaption>Default Flat Shading</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%209.33.55%20PM.png" alt="Phong Shading"/><figcaption>Smooth Phong Shading</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_9.33.46.png" alt="Flat Shading"/><figcaption>Default Flat Shading</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_9.33.55.png" alt="Phong Shading"/><figcaption>Smooth Phong Shading</figcaption></td>
             </tr>
         </table>
 
         <h2>Part 4: Edge Flip</h2>
         <p>To implement the edge flip operation, I first gathered all relevant data points, like half-edges, vertices, faces… from the two adjacent triangles before making any modifications. Next, I reassigned the pointers for every single element to match the post-flip configuration, while ignoring boundary edges. An implementation trick I used was mapping out the before-and-after states on paper to track each pointer to prevent any significant mesh errors.</p>
         
-        
         <table>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%207.32.10%20PM.png" alt="Before Flip"/><figcaption>Before Edge Flips</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%207.33.12%20PM.png" alt="After Flip"/><figcaption>After Edge Flips</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_7.32.10.png" alt="Before Flip"/><figcaption>Before Edge Flips</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_7.33.12.png" alt="After Flip"/><figcaption>After Edge Flips</figcaption></td>
             </tr>
         </table>
 
         <h2>Part 5: Edge Split</h2>
         <p>To implement the edge split function, I created a new vertex at the edge's midpoint along with the necessary new edges, faces, and half-edges in order to divide the two original triangles into four. During debugging, I encountered missing triangles and black background holes in my mesh because I incorrectly reassigned the origins of the outer boundary half-edges. Drawing a detailed before-and-after diagram allowed me to properly assign pointers to create a complete surface.</p>
         
-        
-        
         <table>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%209.29.12%20PM.png" alt="Original Mesh"/><figcaption>Original Mesh</figcaption></td>
-                <td><img src="hw2/images/Screenshot%2026-02-21%20at%209.29.28%20PM.png" alt="After Splits"/><figcaption>After Edge Splits</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%209.29.57%20PM.png" alt="After Flips and Splits"/><figcaption>After Flips and Splits</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_9.29.12.png" alt="Original Mesh"/><figcaption>Original Mesh</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_9.29.28.png" alt="After Splits"/><figcaption>After Edge Splits</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_9.29.57.png" alt="After Flips and Splits"/><figcaption>After Flips and Splits</figcaption></td>
             </tr>
         </table>
 
@@ -102,19 +96,17 @@
         <p>I implemented the loop subdivision function by first computing the updated positions for all original vertices and edge midpoints and storing them. Then, I split every original edge and flipped the newly created edges that connected an old and a new vertex, and updated all vertices to their calculated positions. I ran into a few infinite loops, and my main debugging trick was strictly using the isNew flags to avoid an infinite loop of splitting newly created edges.</p>
         <p>After applying Loop subdivision, the meshes become much smoother, causing the mesh to become visibly more rounded. Additionally, we can reduce this smoothing effect on specific features by pre-splitting the edges near the sharp corners before subdividing the mesh. This caused higher vertex density, which in turn keeps the algorithm’s weighted averaging to keep the new positions much closer to the original, sharper geometry.</p>
         <p>When repeatedly subdividing the cube, it becomes asymmetric because its faces are initially divided by single diagonals in alternating directions, which causes the looped subdivision weights to pull the vertices unevenly because of the biased topology. To fix this issue and ensure symmetric subdivision, I pre-processed the cube by splitting the diagonal edge across every face to create a symmetric X pattern on all six sides. This balances the vertex degrees and edge connections, allowing the weighted averaging to distribute evenly and maintain a more rounded shape as it upsamples.</p>
-        
-        
 
         <h3>Basic Subdivision Progression</h3>
         <table>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.01.55%20PM.png" alt="Subdivision 1"/><figcaption>Base Mesh</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.02.16%20PM.png" alt="Subdivision 2"/><figcaption>Iteration 1</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.02.25%20PM.png" alt="Subdivision 3"/><figcaption>Iteration 2</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.01.55.png" alt="Subdivision 1"/><figcaption>Base Mesh</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.02.16.png" alt="Subdivision 2"/><figcaption>Iteration 1</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.02.25.png" alt="Subdivision 3"/><figcaption>Iteration 2</figcaption></td>
             </tr>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.02.34%20PM.png" alt="Subdivision 4"/><figcaption>Iteration 3</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.02.44%20PM.png" alt="Subdivision 5"/><figcaption>Iteration 4</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.02.34.png" alt="Subdivision 4"/><figcaption>Iteration 3</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.02.44.png" alt="Subdivision 5"/><figcaption>Iteration 4</figcaption></td>
                 <td></td>
             </tr>
         </table>
@@ -122,21 +114,21 @@
         <h3>Asymmetric vs Symmetric Cube Subdivision</h3>
         <table>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.03.15%20PM.png" alt="Base Cube"/><figcaption>Default Cube</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.03.25%20PM.png" alt="Asymmetric Cube"/><figcaption>Asymmetric Subdivision</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.03.15.png" alt="Base Cube"/><figcaption>Default Cube</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.03.25.png" alt="Asymmetric Cube"/><figcaption>Asymmetric Subdivision</figcaption></td>
             </tr>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.04.34%20PM.png" alt="Pre-processed Cube"/><figcaption>Pre-processed Symmetric Cube</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.04.47%20PM.png" alt="Symmetric Cube Subdivision"/><figcaption>Symmetric Subdivision</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.04.34.png" alt="Pre-processed Cube"/><figcaption>Pre-processed Symmetric Cube</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.04.47.png" alt="Symmetric Cube Subdivision"/><figcaption>Symmetric Subdivision</figcaption></td>
             </tr>
         </table>
 
         <h3>Edge Sharpness Preservation</h3>
         <table>
             <tr>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.07.55%20PM.png" alt="Pre-split Edge"/><figcaption>Pre-splitting Specific Face</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.08.25%20PM.png" alt="Sharp Edge 1"/><figcaption>Subdivision Iteration 1</figcaption></td>
-                <td><img src="hw2/images/Screenshot%202026-02-21%20at%2010.08.35%20PM.png" alt="Sharp Edge 2"/><figcaption>Subdivision Iteration 2 (Face Remains Flat)</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.07.55.png" alt="Pre-split Edge"/><figcaption>Pre-splitting Specific Face</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.08.25.png" alt="Sharp Edge 1"/><figcaption>Subdivision Iteration 1</figcaption></td>
+                <td><img src="hw2/images/Screenshot_2026-02-21_at_10.08.35.png" alt="Sharp Edge 2"/><figcaption>Subdivision Iteration 2 (Face Remains Flat)</figcaption></td>
             </tr>
         </table>
 
