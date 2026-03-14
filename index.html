@@ -85,6 +85,14 @@
             <figcaption>Global Illumination (1024 samples/pixel)</figcaption>
         </figure>
 
+        <h3>Direct vs. Indirect Illumination</h3>
+        <table>
+            <tr>
+                <td><img src="hw3/bunny_direct_only.png" alt="Direct Illumination Only"/><figcaption>Direct Illumination Only</figcaption></td>
+                <td><img src="hw3/bunny_indirect_only.png" alt="Indirect Illumination Only"/><figcaption>Indirect Illumination Only</figcaption></td>
+            </tr>
+        </table>
+
         <p>When compared, the two images show that the direct illumination image features roug shadows and illuminates only surfaces with a clear line of sight to the light source. The indirect illumination image captures the ambient light bouncing off the colored walls and floor, filling in those shadows with realistic color bleeding while completely lacking the bright primary light source.</p>
         <p>In the 2nd bounce of light, we primarily see the subtle color bleeding on the bunny from the red and blue walls, while the 3rd bounce is even dimmer but adds a very faint wash of light to areas occluded from previous bounces. These higher-order bounces contribute significantly to the photorealism of the final image by simulating ambient occlusion.</p>
 
@@ -121,6 +129,22 @@
             <img src="hw3/bunny_rr_100.png" alt="Russian Roulette (m=100)"/>
             <figcaption>Russian Roulette with max_ray_depth = 100</figcaption>
         </figure>
+
+        <h3>Sample Rate Comparison</h3>
+        <table>
+            <tr>
+                <td><img src="hw3/bunny_s1.png" alt="1 Sample per Pixel"/><figcaption>1 Sample per Pixel</figcaption></td>
+                <td><img src="hw3/bunny_s2.png" alt="2 Samples per Pixel"/><figcaption>2 Samples per Pixel</figcaption></td>
+                <td><img src="hw3/bunny_s4.png" alt="4 Samples per Pixel"/><figcaption>4 Samples per Pixel</figcaption></td>
+                <td><img src="hw3/bunny_s8.png" alt="8 Samples per Pixel"/><figcaption>8 Samples per Pixel</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw3/bunny_s16.png" alt="16 Samples per Pixel"/><figcaption>16 Samples per Pixel</figcaption></td>
+                <td><img src="hw3/bunny_s64.png" alt="64 Samples per Pixel"/><figcaption>64 Samples per Pixel</figcaption></td>
+                <td><img src="hw3/bunny_s1024.png" alt="1024 Samples per Pixel"/><figcaption>1024 Samples per Pixel</figcaption></td>
+                <td></td>
+            </tr>
+        </table>
 
         <p>When rendering with extremely low sample rates, such as 1 or 2 rays per pixel, the image is overwhelmed by harsh black and white noise due to the high variance of random path tracing. As the sample-per-pixel rate increases to 1024, the Monte Carlo estimator converges, smoothing out the noise to produce clean soft shadows and global color bleeding.</p>
 
