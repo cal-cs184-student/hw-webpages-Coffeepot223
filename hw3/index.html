@@ -1,106 +1,139 @@
 <html>
-	<head>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-		<style>
-			h1 {
-				text-align: center;
-			}
+    <head>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+        <style>
+            h1 { text-align: center; }
+            .container { margin: 0 auto; padding: 60px 20%; }
+            figure { text-align: center; margin: 20px 0; }
+            img { display: inline-block; max-width: 100%; height: auto; border: 1px solid #ddd; }
+            body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #333; }
+            table { width: 100%; text-align: center; border-collapse: collapse; margin-top: 20px; }
+            td { padding: 10px; vertical-align: top; }
+            figcaption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+            h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 40px; }
+            h3 { margin-top: 30px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+        <h1>CS184/284A Spring 2026 Homework 3 Write-Up</h1>
+        <div style="text-align: center; font-weight: 600;">Johnson Huang</div>
 
-			.container {
-				margin: 0 auto;
-				padding: 60px 20%;
-			}
+        <div style="text-align: center; margin: 20px 0;">
+            <b>Link to webpage:</b> <a href="https://cal-cs184-student.github.io/hw-webpages-Coffeepot223/">https://cal-cs184-student.github.io/hw-webpages-Coffeepot223/</a><br>
+            <b>Link to GitHub repository:</b> <a href="https://github.com/cal-cs184-student/hw3-pathtracer">https://github.com/cal-cs184-student/hw3-pathtracer</a>
+        </div>
 
-			figure {
-				text-align: center;
-			}
+        <h2>Part 1: Ray Generation and Scene Intersection</h2>
+        <p>To implement ray-triangle intersection, I used the Möller-Trumbore algorithm, which applies Cramer's rule to solve the linear system for the intersection time, t, and the barycentric coordinates b1 and b2 in a single step. An intersection is considered valid only if the computed t falls strictly between the ray's min_t and max_t clipping bounds, as well as if the barycentric coordinates all evaluate to between 0 and 1 to ensure the point lies inside the triangle. If these conditions are met, the algorithm updates the ray's max_t to this new closest hit. It populates the intersection data structure with the calculated time, the interpolated surface normal, and the primitive's material details.</p>
+        
+        <table>
+            <tr>
+                <td><img src="hw3/banana.png" alt="Banana"/><figcaption>banana.dae</figcaption></td>
+                <td><img src="hw3/CBempty.png" alt="CBempty"/><figcaption>CBempty.dae</figcaption></td>
+                <td><img src="hw3/CBspheres.png" alt="CBspheres"/><figcaption>CBspheres.dae</figcaption></td>
+            </tr>
+        </table>
 
-			img {
-				display: inline-block;
-			}
+        <h2>Part 2: Bounding Volume Hierarchy</h2>
+        <p>My BVH construction algorithm used recursion to continuously divide primitives by first computing a bounding box for the current node and creating a leaf node if the primitive count is at or below the maximum allowed. If not, it then splits the primitives along the bounding box's longest axis, using the average centroid along that axis as the splitting point to distribute the geometry spatially. It then partitions the primitives around this point and recursively builds the left and right child nodes, forcing a split down the middle if the heuristic places all primitives on one side.</p>
+        
+        <table>
+            <tr>
+                <td><img src="hw3/maxplanck.png" alt="Max Planck"/><figcaption>maxplanck.dae</figcaption></td>
+                <td><img src="hw3/CBlucy.png" alt="CBlucy"/><figcaption>CBlucy.dae</figcaption></td>
+            </tr>
+        </table>
 
-			body {
-				font-family: 'Inter', sans-serif;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="container">
-		<h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+        <p>Without BVH acceleration, rendering a moderately complex scene like cow.dae takes around 40 seconds because every camera ray has to check for an intersection against every switch triangle mesh. With BVH acceleration, rendering drops to under a second because the spatial structure reduces intersection complexity from O(n) to O(log n). This logarithmic scaling makes it computationally cheaper to render highly complex meshes by allowing the algorithm to quickly discard large groups of primitives that a ray is guaranteed to miss.</p>
 
-		<br>
+        <h2>Part 3: Direct Illumination</h2>
+        <p>For uniform hemisphere sampling, I used Monte Carlo integration to estimate direct lighting by taking sampling points uniformly over the hemisphere above the hit point. For each sample, a shadow ray is cast; if the ray intersects a light source, the incoming radiance is weighted by the BSDF, the cosine of the incoming angle, and the uniform probability density function. For importance sampling, instead of randomly guessing directions, I iterated over every light in the scene and sampled their outgoing radiance directly. A shadow ray is cast from the hit point specifically toward the sampled light. If the ray does not hit any other geometry before reaching the light source, the light's contribution is accumulated using the same reflection equation components.</p>
+        
+        <table>
+            <tr>
+                <td><img src="hw3/bunny_H_64_32.png" alt="Hemisphere Sampling"/><figcaption>Uniform Hemisphere Sampling</figcaption></td>
+                <td><img src="hw3/bunny_64_32.png" alt="Importance Sampling"/><figcaption>Importance Sampling</figcaption></td>
+            </tr>
+        </table>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-		
-		<figure>
-			<img src="cornell.png" alt="Cornell Boxes with Bunnies" style="width:70%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
+        <figure>
+            <img src="hw3/dragon_64_32.png" alt="Dragon Importance Sampling"/>
+            <figcaption>Dragon Rendered with Importance Sampling</figcaption>
+        </figure>
 
-		<!--
-		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
-		-->
+        <h3>Noise Levels in Soft Shadows (Light Sampling)</h3>
+        <table>
+            <tr>
+                <td><img src="hw3/bunny_l1.png" alt="1 Light Ray"/><figcaption>1 Light Ray</figcaption></td>
+                <td><img src="hw3/bunny_l4.png" alt="4 Light Rays"/><figcaption>4 Light Rays</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw3/bunny_l16.png" alt="16 Light Rays"/><figcaption>16 Light Rays</figcaption></td>
+                <td><img src="hw3/bunny_l64.png" alt="64 Light Rays"/><figcaption>64 Light Rays</figcaption></td>
+            </tr>
+        </table>
 
-		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+        <p>Uniform hemisphere sampling produces significantly noisier images because rays are cast randomly, so many of them miss the light sources entirely and contribute zero. This requires a large number of samples per pixel to converge to a smooth image. Importance sampling drastically reduces this variance and noise by intentionally directing shadow rays only at known light sources. This guarantees that unoccluded rays always return a valid light ray, resulting in cleaner soft shadows and overall illumination even at lower sampling rates.</p>
+        
+        <h2>Part 4: Global Illumination</h2>
+        <p>My indirect lighting implementation relies on the at_least_one_bounce_radiance function, which recursively traces rays to simulate light bouncing through the scene. At each hit point, I compute the one-bounce direct illumination and then use Russian Roulette with a continuation probability of 0.65 to decide whether to sample a new incoming direction from the BSDF randomly and cast a new ray. If the ray continues, I accumulate the recursively returned radiance, weighting it by the BSDF evaluation, the cosine of the incoming angle, and the inverse of both the sampling probability density function and the Russian Roulette continuation probability.</p>
+        
+        <figure>
+            <img src="hw3/bunny_accum_5.png" alt="Global Illumination (1024 samples)"/>
+            <figcaption>Global Illumination (1024 samples/pixel)</figcaption>
+        </figure>
 
-		<h2>Part 1: Ray Generation and Scene Intersection</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <p>When compared, the two images show that the direct illumination image features roug shadows and illuminates only surfaces with a clear line of sight to the light source. The indirect illumination image captures the ambient light bouncing off the colored walls and floor, filling in those shadows with realistic color bleeding while completely lacking the bright primary light source.</p>
+        <p>In the 2nd bounce of light, we primarily see the subtle color bleeding on the bunny from the red and blue walls, while the 3rd bounce is even dimmer but adds a very faint wash of light to areas occluded from previous bounces. These higher-order bounces contribute significantly to the photorealism of the final image by simulating ambient occlusion.</p>
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
-		
-		<h2>Part 2: Bounding Volume Hierarchy</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <h3>Accumulated vs Unaccumulated Bounces</h3>
+        <table>
+            <tr>
+                <td><img src="hw3/bunny_accum_0.png" alt="Accum 0"/><figcaption>Accumulated Bounce 0</figcaption></td>
+                <td><img src="hw3/bunny_unaccum_0.png" alt="Unaccum 0"/><figcaption>Unaccumulated Bounce 0</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw3/bunny_accum_1.png" alt="Accum 1"/><figcaption>Accumulated Bounce 1</figcaption></td>
+                <td><img src="hw3/bunny_unaccum_1.png" alt="Unaccum 1"/><figcaption>Unaccumulated Bounce 1</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw3/bunny_accum_2.png" alt="Accum 2"/><figcaption>Accumulated Bounce 2</figcaption></td>
+                <td><img src="hw3/bunny_unaccum_2.png" alt="Unaccum 2"/><figcaption>Unaccumulated Bounce 2</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw3/bunny_accum_3.png" alt="Accum 3"/><figcaption>Accumulated Bounce 3</figcaption></td>
+                <td><img src="hw3/bunny_unaccum_3.png" alt="Unaccum 3"/><figcaption>Unaccumulated Bounce 3</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw3/bunny_accum_4.png" alt="Accum 4"/><figcaption>Accumulated Bounce 4</figcaption></td>
+                <td><img src="hw3/bunny_unaccum_4.png" alt="Unaccum 4"/><figcaption>Unaccumulated Bounce 4</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="hw3/bunny_accum_5.png" alt="Accum 5"/><figcaption>Accumulated Bounce 5</figcaption></td>
+                <td><img src="hw3/bunny_unaccum_5.png" alt="Unaccum 5"/><figcaption>Unaccumulated Bounce 5</figcaption></td>
+            </tr>
+        </table>
 
-		<h2>Part 3: Direct Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <h3>Russian Roulette</h3>
+        <figure>
+            <img src="hw3/bunny_rr_100.png" alt="Russian Roulette (m=100)"/>
+            <figcaption>Russian Roulette with max_ray_depth = 100</figcaption>
+        </figure>
 
-		<h2>Part 4: Global Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <p>When rendering with extremely low sample rates, such as 1 or 2 rays per pixel, the image is overwhelmed by harsh black and white noise due to the high variance of random path tracing. As the sample-per-pixel rate increases to 1024, the Monte Carlo estimator converges, smoothing out the noise to produce clean soft shadows and global color bleeding.</p>
 
-		<h2>Part 5: Adaptive Sampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <h2>Part 5: Adaptive Sampling</h2>
+        <p>My adaptive sampling implementation tracks the sum of illuminance and the sum of squared illuminance for each pixel to compute its statistical mean and variance after every batch of rays. Using these statistics, I calculate a 95% confidence interval. If the interval falls below the maximum tolerance threshold, the loop terminates early, stopping sampling of that pixel. This approach dynamically concentrates computational effort on complex, noisy regions such as soft shadows while quickly skipping over simple, converged areas such as flat walls.</p>
+        
+        <table>
+            <tr>
+                <td><img src="hw3/bunny_adaptive.png" alt="Adaptive Sampling Render"/><figcaption>Adaptive Sampling Render (2048 samples)</figcaption></td>
+                <td><img src="hw3/bunny_adaptive_rate.png" alt="Adaptive Sampling Rate Map"/><figcaption>Adaptive Sampling Rate Map</figcaption></td>
+            </tr>
+        </table>
 
-		<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
-		</div>
-	</body>
+        </div>
+    </body>
 </html>
