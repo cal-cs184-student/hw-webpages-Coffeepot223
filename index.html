@@ -1,6 +1,5 @@
 <html>
     <head>
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
         <style>
             h1 { text-align: center; }
@@ -17,144 +16,157 @@
     </head>
     <body>
         <div class="container">
-        <h1>CS184/284A Spring 2026 Homework 3 Write-Up</h1>
+        <h1>CS184/284A Spring 2026 Homework 4 Write-Up</h1>
         <div style="text-align: center; font-weight: 600;">Johnson Huang</div>
 
         <div style="text-align: center; margin: 20px 0;">
             <b>Link to webpage:</b> <a href="https://cal-cs184-student.github.io/hw-webpages-Coffeepot223/">https://cal-cs184-student.github.io/hw-webpages-Coffeepot223/</a><br>
-            <b>Link to GitHub repository:</b> <a href="https://github.com/cal-cs184-student/hw3-pathtracer-jonjon3#">https://github.com/cal-cs184-student/hw3-pathtracer-jonjon3#</a>
+            <b>Link to GitHub repository:</b> <a href="https://github.com/cal-cs184-student/hw4-clothsim-jonjon4#">https://github.com/cal-cs184-student/hw4-clothsim-jonjon4#</a>
         </div>
 
-        <h2>Part 1: Ray Generation and Scene Intersection</h2>
-        <p>To implement ray-triangle intersection, I used the Möller-Trumbore algorithm, which applies Cramer's rule to solve the linear system for the intersection time, t, and the barycentric coordinates b1 and b2 in a single step. An intersection is considered valid only if the computed t falls strictly between the ray's min_t and max_t clipping bounds, as well as if the barycentric coordinates all evaluate to between 0 and 1 to ensure the point lies inside the triangle. If these conditions are met, the algorithm updates the ray's max_t to this new closest hit. It populates the intersection data structure with the calculated time, the interpolated surface normal, and the primitive's material details.</p>
+        <h2>Part 1: Masses and Springs</h2>
+        <p>For Part 1, I built the initial mass-spring system by first generating an evenly spaced grid of point masses across the cloth's dimensions, while ensuring vertical orientations included a small random Z-offset to break symmetry for future self-collisions. I then populated the springs vector by iterating over the grid and applying structural, shearing, and bending constraints to connect adjacent, diagonal, and secondary masses using 1D array indexing.</p>
         
         <table>
             <tr>
-                <td><img src="hw3/banana.png" alt="Banana"/><figcaption>banana.dae</figcaption></td>
-                <td><img src="hw3/CBempty.png" alt="CBempty"/><figcaption>CBempty.dae</figcaption></td>
-                <td><img src="hw3/CBspheres.png" alt="CBspheres"/><figcaption>CBspheres.dae</figcaption></td>
+                <td><img src="11.png" alt="Pinned2 Wireframe"/><figcaption>scene/pinned2.json Wireframe</figcaption></td>
+                <td><img src="12.png" alt="No Shearing"/><figcaption>Without Shearing Constraints</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="13.png" alt="Only Shearing"/><figcaption>With Only Shearing Constraints</figcaption></td>
+                <td><img src="14.png" alt="All Constraints"/><figcaption>With All Constraints Enabled</figcaption></td>
             </tr>
         </table>
 
-        <h2>Part 2: Bounding Volume Hierarchy</h2>
-        <p>My BVH construction algorithm used recursion to continuously divide primitives by first computing a bounding box for the current node and creating a leaf node if the primitive count is at or below the maximum allowed. If not, it then splits the primitives along the bounding box's longest axis, using the average centroid along that axis as the splitting point to distribute the geometry spatially. It then partitions the primitives around this point and recursively builds the left and right child nodes, forcing a split down the middle if the heuristic places all primitives on one side.</p>
+        <h2>Part 2: Simulation via Numerical Integration</h2>
+        <h3>Implementation Overview</h3>
+        <p>In Part 2, I computed the total force acting on each point mass by accumulating external forces, such as gravitational and spring-correction forces, with Hooke's Law. I then used Verlet integration with a damping factor to calculate the new positions of the point masses over time. Then, I applied Provot's deformation constraints to ensure no spring stretched beyond 10% of its rest length.</p>
+        
+        <h3>Effects of Spring Constant (k_s)</h3>
+        <p>A low spring constant makes the cloth highly elastic, causing it to stretch and ripple continuously as it falls to rest. Conversely, a high k_s creates a more rigid material that resists bending and settles into its resting state much faster with minimal bouncing.</p>
+        
+        <h3>Effects of Density</h3>
+        <p>Decreasing the density makes the cloth much lighter, resulting in a gentle fall that comes to rest with smooth surface folds. Increasing the density makes a heavier cloth that plummets quickly, pulling heavily on the pinned corners and creating creases at rest.</p>
+
+        <h3>Effects of Damping</h3>
+        <p>A low damping percentage causes the system to retain most of its energy, leading to swinging and bouncing that takes a very long time to stabilize. A high damping percentage rapidly dissipates energy, forcing the cloth to fall slowly and come to an immediate stop almost instantly without any extra swinging.</p>
         
         <table>
             <tr>
-                <td><img src="hw3/maxplanck.png" alt="Max Planck"/><figcaption>maxplanck.dae</figcaption></td>
-                <td><img src="hw3/CBlucy.png" alt="CBlucy"/><figcaption>CBlucy.dae</figcaption></td>
+                <td><img src="21.png" alt="Low ks"/><figcaption>Low k_s (500)</figcaption></td>
+                <td><img src="22.png" alt="High ks"/><figcaption>High k_s (100,000)</figcaption></td>
             </tr>
-        </table>
-
-        <p>Without BVH acceleration, rendering a moderately complex scene like cow.dae takes around 40 seconds because every camera ray has to check for an intersection against every switch triangle mesh. With BVH acceleration, rendering drops to under a second because the spatial structure reduces intersection complexity from O(n) to O(log n). This logarithmic scaling makes it computationally cheaper to render highly complex meshes by allowing the algorithm to quickly discard large groups of primitives that a ray is guaranteed to miss.</p>
-
-        <h2>Part 3: Direct Illumination</h2>
-        <p>For uniform hemisphere sampling, I used Monte Carlo integration to estimate direct lighting by taking sampling points uniformly over the hemisphere above the hit point. For each sample, a shadow ray is cast; if the ray intersects a light source, the incoming radiance is weighted by the BSDF, the cosine of the incoming angle, and the uniform probability density function. For importance sampling, instead of randomly guessing directions, I iterated over every light in the scene and sampled their outgoing radiance directly. A shadow ray is cast from the hit point specifically toward the sampled light. If the ray does not hit any other geometry before reaching the light source, the light's contribution is accumulated using the same reflection equation components.</p>
-        
-        <table>
             <tr>
-                <td><img src="hw3/bunny_H_64_32.png" alt="Hemisphere Sampling"/><figcaption>Uniform Hemisphere Sampling</figcaption></td>
-                <td><img src="hw3/bunny_64_32.png" alt="Importance Sampling"/><figcaption>Importance Sampling</figcaption></td>
+                <td><img src="23.png" alt="Low density"/><figcaption>Low Density (1)</figcaption></td>
+                <td><img src="24.png" alt="High density"/><figcaption>High Density (100)</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="25.png" alt="Low damping"/><figcaption>Low Damping (~0%)</figcaption></td>
+                <td><img src="26.png" alt="High damping"/><figcaption>High Damping (~1%)</figcaption></td>
             </tr>
         </table>
 
         <figure>
-            <img src="hw3/dragon_64_32.png" alt="Dragon Importance Sampling"/>
-            <figcaption>Dragon Rendered with Importance Sampling</figcaption>
+            <img src="27.png" alt="Pinned4 Resting"/>
+            <figcaption>Default Parameters: scene/pinned4.json at Rest</figcaption>
         </figure>
 
-        <h3>Noise Levels in Soft Shadows (Light Sampling)</h3>
+        <h2>Part 3: Handling Collisions with Other Objects</h2>
+        <h3>Handling Collisions Implementation</h3>
+        <p>To handle collisions, I implemented intersection tests for both spheres and planes to determine if a point mass breached the primitive's surface during the current time step. If an intersection occurred, I then calculated the exact tangent point on the surface and a correction vector from the mass's previous position to a target slightly above this tangent point. Finally, I updated the current position using this correction vector scaled down by friction.</p>
+        
+        <h3>Differences in Results (Sphere)</h3>
+        <p>With a lower ks (500), the cloth is highly elastic and stretches deeply around the sphere, conforming tightly to its circular shape. At the default ks (5000), it drapes naturally with standard folds, while a high ks (50000) makes the cloth extremely stiff, causing it to balance rigidly on top of the sphere with minimal downward draping.</p>
+        
         <table>
             <tr>
-                <td><img src="hw3/bunny_l1.png" alt="1 Light Ray"/><figcaption>1 Light Ray</figcaption></td>
-                <td><img src="hw3/bunny_l4.png" alt="4 Light Rays"/><figcaption>4 Light Rays</figcaption></td>
-            </tr>
-            <tr>
-                <td><img src="hw3/bunny_l16.png" alt="16 Light Rays"/><figcaption>16 Light Rays</figcaption></td>
-                <td><img src="hw3/bunny_l64.png" alt="64 Light Rays"/><figcaption>64 Light Rays</figcaption></td>
+                <td><img src="31.png" alt="Sphere ks 5000"/><figcaption>Sphere Collision: ks = 5000 (default)</figcaption></td>
+                <td><img src="32.png" alt="Sphere ks 500"/><figcaption>Sphere Collision: ks = 500</figcaption></td>
+                <td><img src="33.png" alt="Sphere ks 50000"/><figcaption>Sphere Collision: ks = 50000</figcaption></td>
             </tr>
         </table>
 
-        <p>Uniform hemisphere sampling produces significantly noisier images because rays are cast randomly, so many of them miss the light sources entirely and contribute zero. This requires a large number of samples per pixel to converge to a smooth image. Importance sampling drastically reduces this variance and noise by intentionally directing shadow rays only at known light sources. This guarantees that unoccluded rays always return a valid light ray, resulting in cleaner soft shadows and overall illumination even at lower sampling rates.</p>
-        
-        <h2>Part 4: Global Illumination</h2>
-        <p>My indirect lighting implementation relies on the at_least_one_bounce_radiance function, which recursively traces rays to simulate light bouncing through the scene. At each hit point, I compute the one-bounce direct illumination and then use Russian Roulette with a continuation probability of 0.65 to decide whether to sample a new incoming direction from the BSDF randomly and cast a new ray. If the ray continues, I accumulate the recursively returned radiance, weighting it by the BSDF evaluation, the cosine of the incoming angle, and the inverse of both the sampling probability density function and the Russian Roulette continuation probability.</p>
-        
         <figure>
-            <img src="hw3/bunny_accum_5.png" alt="Global Illumination (1024 samples)"/>
-            <figcaption>Global Illumination (1024 samples/pixel)</figcaption>
+            <img src="34.png" alt="Plane Collision"/>
+            <figcaption>Plane Collision (Resting State)</figcaption>
         </figure>
 
-        <h3>Direct vs. Indirect Illumination</h3>
-        <table>
-            <tr>
-                <td><img src="hw3/bunny_direct_only.png" alt="Direct Illumination Only"/><figcaption>Direct Illumination Only</figcaption></td>
-                <td><img src="hw3/bunny_indirect_only.png" alt="Indirect Illumination Only"/><figcaption>Indirect Illumination Only</figcaption></td>
-            </tr>
-        </table>
-
-        <p>When compared, the two images show that the direct illumination image features roug shadows and illuminates only surfaces with a clear line of sight to the light source. The indirect illumination image captures the ambient light bouncing off the colored walls and floor, filling in those shadows with realistic color bleeding while completely lacking the bright primary light source.</p>
-        <p>In the 2nd bounce of light, we primarily see the subtle color bleeding on the bunny from the red and blue walls, while the 3rd bounce is even dimmer but adds a very faint wash of light to areas occluded from previous bounces. These higher-order bounces contribute significantly to the photorealism of the final image by simulating ambient occlusion.</p>
-
-        <h3>Accumulated vs Unaccumulated Bounces</h3>
-        <table>
-            <tr>
-                <td><img src="hw3/bunny_accum_0.png" alt="Accum 0"/><figcaption>Accumulated Bounce 0</figcaption></td>
-                <td><img src="hw3/bunny_unaccum_0.png" alt="Unaccum 0"/><figcaption>Unaccumulated Bounce 0</figcaption></td>
-            </tr>
-            <tr>
-                <td><img src="hw3/bunny_accum_1.png" alt="Accum 1"/><figcaption>Accumulated Bounce 1</figcaption></td>
-                <td><img src="hw3/bunny_unaccum_1.png" alt="Unaccum 1"/><figcaption>Unaccumulated Bounce 1</figcaption></td>
-            </tr>
-            <tr>
-                <td><img src="hw3/bunny_accum_2.png" alt="Accum 2"/><figcaption>Accumulated Bounce 2</figcaption></td>
-                <td><img src="hw3/bunny_unaccum_2.png" alt="Unaccum 2"/><figcaption>Unaccumulated Bounce 2</figcaption></td>
-            </tr>
-            <tr>
-                <td><img src="hw3/bunny_accum_3.png" alt="Accum 3"/><figcaption>Accumulated Bounce 3</figcaption></td>
-                <td><img src="hw3/bunny_unaccum_3.png" alt="Unaccum 3"/><figcaption>Unaccumulated Bounce 3</figcaption></td>
-            </tr>
-            <tr>
-                <td><img src="hw3/bunny_accum_4.png" alt="Accum 4"/><figcaption>Accumulated Bounce 4</figcaption></td>
-                <td><img src="hw3/bunny_unaccum_4.png" alt="Unaccum 4"/><figcaption>Unaccumulated Bounce 4</figcaption></td>
-            </tr>
-            <tr>
-                <td><img src="hw3/bunny_accum_5.png" alt="Accum 5"/><figcaption>Accumulated Bounce 5</figcaption></td>
-                <td><img src="hw3/bunny_unaccum_5.png" alt="Unaccum 5"/><figcaption>Unaccumulated Bounce 5</figcaption></td>
-            </tr>
-        </table>
-
-        <h3>Russian Roulette</h3>
-        <figure>
-            <img src="hw3/bunny_rr_100.png" alt="Russian Roulette (m=100)"/>
-            <figcaption>Russian Roulette with max_ray_depth = 100</figcaption>
-        </figure>
-
-        <h3>Sample Rate Comparison</h3>
-        <table>
-            <tr>
-                <td><img src="hw3/bunny_s1.png" alt="1 Sample per Pixel"/><figcaption>1 Sample per Pixel</figcaption></td>
-                <td><img src="hw3/bunny_s2.png" alt="2 Samples per Pixel"/><figcaption>2 Samples per Pixel</figcaption></td>
-                <td><img src="hw3/bunny_s4.png" alt="4 Samples per Pixel"/><figcaption>4 Samples per Pixel</figcaption></td>
-                <td><img src="hw3/bunny_s8.png" alt="8 Samples per Pixel"/><figcaption>8 Samples per Pixel</figcaption></td>
-            </tr>
-            <tr>
-                <td><img src="hw3/bunny_s16.png" alt="16 Samples per Pixel"/><figcaption>16 Samples per Pixel</figcaption></td>
-                <td><img src="hw3/bunny_s64.png" alt="64 Samples per Pixel"/><figcaption>64 Samples per Pixel</figcaption></td>
-                <td><img src="hw3/bunny_s1024.png" alt="1024 Samples per Pixel"/><figcaption>1024 Samples per Pixel</figcaption></td>
-                <td></td>
-            </tr>
-        </table>
-
-        <p>When rendering with extremely low sample rates, such as 1 or 2 rays per pixel, the image is overwhelmed by harsh black and white noise due to the high variance of random path tracing. As the sample-per-pixel rate increases to 1024, the Monte Carlo estimator converges, smoothing out the noise to produce clean soft shadows and global color bleeding.</p>
-
-        <h2>Part 5: Adaptive Sampling</h2>
-        <p>My adaptive sampling implementation tracks the sum of illuminance and the sum of squared illuminance for each pixel to compute its statistical mean and variance after every batch of rays. Using these statistics, I calculate a 95% confidence interval. If the interval falls below the maximum tolerance threshold, the loop terminates early, stopping sampling of that pixel. This approach dynamically concentrates computational effort on complex, noisy regions such as soft shadows while quickly skipping over simple, converged areas such as flat walls.</p>
+        <h2>Part 4: Handling Self-Collisions</h2>
+        <h3>Self-Collision & Parameter Analysis</h3>
+        <p>To handle self-collisions efficiently, I implemented spatial hashing by mapping each point mass to a 3D box volume, computing correction vectors only between nearby candidates sharing the same spatial bucket to prevent clipping. When varying parameters, increasing the density causes the cloth to collapse into tighter folds on the ground, while decreasing it results in wider and smoother folds. Additionally, adjusting the spring constant (ks) alters the folding stiffness; a high ks makes the cloth rigid and resistant to creasing, whereas a low ks allows it to easily crumple.</p>
         
+        <h3>Self-Collision Progression</h3>
         <table>
             <tr>
-                <td><img src="hw3/bunny_adaptive.png" alt="Adaptive Sampling Render"/><figcaption>Adaptive Sampling Render (2048 samples)</figcaption></td>
-                <td><img src="hw3/bunny_adaptive_rate.png" alt="Adaptive Sampling Rate Map"/><figcaption>Adaptive Sampling Rate Map</figcaption></td>
+                <td><img src="41.png" alt="Initial collision"/><figcaption>Initial Collision</figcaption></td>
+                <td><img src="42.png" alt="Halfway folded"/><figcaption>Halfway Folded</figcaption></td>
+                <td><img src="43.png" alt="Final resting state"/><figcaption>Final Resting State</figcaption></td>
+            </tr>
+        </table>
+
+        <h3>Density & Spring Constant Adjustments</h3>
+        <table>
+            <tr>
+                <td><img src="45.png" alt="Low density folds"/><figcaption>Low Density Folds (2)</figcaption></td>
+                <td><img src="44.png" alt="High density folds"/><figcaption>High Density Folds (50)</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="47.png" alt="Low ks folds"/><figcaption>Low ks Folds (500)</figcaption></td>
+                <td><img src="46.png" alt="High ks folds"/><figcaption>High ks Folds (50000)</figcaption></td>
+            </tr>
+        </table>
+
+        <h2>Part 5: Shaders</h2>
+        <h3>Shaders & Blinn-Phong Model</h3>
+        <p>A shader program is an isolated program running in parallel on the GPU, where vertex shaders first transform geometric properties like positions and normals, passing them as varyings to fragment shaders that, in turn, compute the final per-pixel color. The Blinn-Phong shading model calculates this final color by combining a constant ambient light component, a diffuse reflection component that scatters light evenly across the surface, and a specular component that creates bright highlights based on the viewer's specific angle.</p>
+        
+        <h3>Bump vs. Displacement Mapping</h3>
+        <p>Bump mapping creates the visual illusion of surface detail by modifying the normal vectors within the fragment shader without actually altering the object's physical geometry. In contrast, displacement mapping physically modifies the vertex positions in the vertex shader according to a height map, which actually changes the object's geometry and reacts much more noticeably when the sphere's mesh resolution is increased.</p>
+        
+        <h3>1. Blinn-Phong Lighting Components</h3>
+        <table>
+            <tr>
+                <td><img src="51.png" alt="Ambient Only"/><figcaption>Ambient Component Only</figcaption></td>
+                <td><img src="52.png" alt="Diffuse Only"/><figcaption>Diffuse Component Only</figcaption></td>
+            </tr>
+            <tr>
+                <td><img src="53.png" alt="Specular Only"/><figcaption>Specular Component Only</figcaption></td>
+                <td><img src="54.png" alt="Full Phong"/><figcaption>Complete Blinn-Phong Model</figcaption></td>
+            </tr>
+        </table>
+
+        <h3>2. Texture Mapping</h3>
+        <figure>
+            <img src="55.png" alt="Custom Texture Mapping"/>
+            <figcaption>Custom Texture Mapping</figcaption>
+        </figure>
+
+        <h3>3. Bump & Displacement Mapping</h3>
+        <table>
+            <tr>
+                <td><img src="56.png" alt="Bump Mapping on Cloth"/><figcaption>Bump Mapping (Cloth)</figcaption></td>
+                <td><img src="57.png" alt="Bump Mapping on Sphere"/><figcaption>Bump Mapping (Sphere)</figcaption></td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td><img src="58.png" alt="Displacement Sphere"/><figcaption>Displacement Mapping (Default Sphere)</figcaption></td>
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td><img src="59.png" alt="Displacement Low Res"/><figcaption>Displacement (-o 16 -a 16)</figcaption></td>
+                <td><img src="60.png" alt="Displacement High Res"/><figcaption>Displacement (-o 128 -a 128)</figcaption></td>
+            </tr>
+        </table>
+
+        <h3>4. Mirror Shader</h3>
+        <table>
+            <tr>
+                <td><img src="61.png" alt="Mirror Shader on Sphere"/><figcaption>Mirror Shader on Sphere</figcaption></td>
+                <td><img src="62.png" alt="Mirror Shader on Cloth"/><figcaption>Mirror Shader on Cloth</figcaption></td>
             </tr>
         </table>
 
